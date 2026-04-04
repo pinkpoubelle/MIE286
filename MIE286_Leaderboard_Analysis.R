@@ -1,6 +1,7 @@
 library(readxl)
 library(tidyverse)
 
+# where the file is located
 dataset <- read_excel("~kimmytran/fake_leaderboard_dataset.xlsx")
 
 dataset$mean_time <- rowMeans(dataset[, c("race1_time_sec", "race2_time_sec", "race3_time_sec")])
