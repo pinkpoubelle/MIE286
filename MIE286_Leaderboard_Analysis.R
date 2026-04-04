@@ -1,7 +1,6 @@
 library(readxl)
 library(tidyverse)
 
-# where the file is located
 dataset <- read_excel("~kimmytran/fake_leaderboard_dataset.xlsx")
 
 dataset$mean_time <- rowMeans(dataset[, c("race1_time_sec", "race2_time_sec", "race3_time_sec")])
@@ -25,6 +24,20 @@ sd_by_game_version <- aggregate(cbind(mean_time, mean_crashes, time_improvement,
 mean_by_game_version
 var_by_game_version
 sd_by_game_version
+
+# normality tests; shapiro-wilk test n < 5000
+# if p < 0.05 --> reject H0 --> data IS NOT normally distributed
+# if p > 0.05 --> fail to reject H0 --> data IS normally distributed
+normal_time_live <- shapiro.test(dataset$mean_time[dataset$game_version == "live_bots"])
+normal_time_post <- shapiro.test(dataset$mean_time[dataset$game_version == "post_no_bots"])
+normal_crash_live <- shapiro.test(dataset$mean_crashes[dataset$game_version == "live_bots"])
+normal_crash_post <- shapiro.test(dataset$mean_crashes[dataset$game_version == "post_no_bots"])
+
+
+normal_time_live
+normal_time_post
+normal_crash_live
+normal_crash_post
 
 # colours of plots (we can change)
 live_bots_col <- "lightblue" 
@@ -80,38 +93,47 @@ boxplot(mean_time ~ game_version, data = dataset,
 boxplot(mean_crashes ~ game_version, data = dataset,
         col = c(live_bots_col, post_no_bots_col),
         main = "Mean Crashes by Condition",
-        xlab = "Game Version", ylab = "Mean Crashes")
+        xlab = "Game Version", ylab = "Mean # of Crashes")
 
 # ALL tests @ confidence level of 95% (alpha = 0.05)
 # check if vaariances are equal (null) or unequal (alt)
-# if p < 0.05 --> variances are unequal
-# if p > 0.05 --> variances are equal
-var.test(mean_time ~ game_version, data = dataset, conf.level = 0.95) 
-var.test(mean_crashes ~ game_version, data = dataset, conf.level = 0.95)
+# if p < 0.05 --> reject H0 --> variances are unequal
+# if p > 0.05 --> fail to reject H0 --> variances are equal
+var_time <- var.test(mean_time ~ game_version, data = dataset, conf.level = 0.95) 
+var_crashes <- var.test(mean_crashes ~ game_version, data = dataset, conf.level = 0.95)
+
+var_time
+var_crashes
 
 # print unpaired t-test values; specifically look at p-value for hypotheses
-# if p < 0.05 --> reject the null hypothesis
-# if p > 0.05 --> fail to reject the null hypothesis
+# if p < 0.05 --> reject H0 --> IS significant difference between groups
+# if p > 0.05 --> fail to reject H0 --> NO significant evidence of difference
 # if variances are unequal, welch's t-test
-t.test(mean_time ~ game_version, data = dataset, conf.level = 0.95)
-t.test(mean_crashes ~ game_version, data = dataset, conf.level = 0.95)
+t_time <- t.test(mean_time ~ game_version, data = dataset, conf.level = 0.95)
+t_crashes <- t.test(mean_crashes ~ game_version, data = dataset, conf.level = 0.95)
 
-# if equal variances
-t.test(mean_time ~ game_version, data = dataset, var.equal = TRUE, conf.level = 0.95)
-t.test(mean_crashes ~ game_version, data = dataset, var.equal = TRUE, conf.level = 0.95)
+t_time
+t_crashes
 
-# pearson corelation test
-# if p < 0.05 statistically significant
+# if equal variances (can delete if not equal)
+t_time <- t.test(mean_time ~ game_version, data = dataset, var.equal = TRUE, conf.level = 0.95)
+t_crashes <- t.test(mean_crashes ~ game_version, data = dataset, var.equal = TRUE, conf.level = 0.95)
+
+# pearson correlation test
+# if p < 0.05 --> statistically significant
 # if cor = negative --> faster (smaller time), more crashes
-# if cor = positive --> slower (larger time), less crashes
-# if cor = 0 no relation
-cor.test(dataset$mean_time, dataset$mean_crashes, conf.level = 0.95)
+# if cor = positive --> slower (larger time), more crashes
+# if cor = 0 --> no relationship
+cor_speed_accuracy <- cor.test(dataset$mean_time, dataset$mean_crashes, conf.level = 0.95)
+
+cor_speed_accuracy
 
 # plot the correlation between crashes and time
 ggplot(dataset, aes(x = mean_time, y = mean_crashes, color = game_version)) +
-  geom_point() +
+  geom_point(size = 2) +
   geom_smooth(method = "lm", se = FALSE) +
+  scale_color_manual(values = c(live_bots_col, post_no_bots_col)) +
   labs(
-    title = "Speed–Accuracy Trade-off",
-    x = "Mean Time",
-    y = "Mean Crashes")
+    title = "Speed–Accuracy Relationship",
+    x = "Mean Time (Seconds)",
+    y = "Mean # of Crashes")
