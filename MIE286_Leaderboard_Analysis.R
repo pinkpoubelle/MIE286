@@ -26,6 +26,131 @@ mean_by_game_version
 var_by_game_version
 sd_by_game_version
 
+# -----------------------------------------------
+
+# colours of plots (we can change)
+live_bots_col <- "#0074D9" 
+post_no_bots_col <- "#FF851B"
+
+# -----------------------------------------------
+dev.new()
+# quantile-quantile plot for each game version and performance outcome
+png("qq_mean_time_A.png", width = 1600, height = 1000, res = 250)
+data_A_time <- dataset$mean_time[dataset$game_version == "A"]
+qqnorm(data_A_time,
+       main = "Q-Q Plot: Completion Time (Live Leaderboard)",
+       xlab = "Theoretical Quantiles",
+       ylab = "Sample Quantiles (Mean Time in Seconds)")
+qqline(data_A_time, col = live_bots_col, lwd = 2)
+dev.off()
+
+png("qq_mean_time_B.png", width = 1600, height = 1000, res = 250)
+data_B_time <- dataset$mean_time[dataset$game_version == "B"]
+qqnorm(data_B_time,
+       main = "Q-Q Plot: Completion Time (Post Leaderboard)",
+       xlab = "Theoretical Quantiles",
+       ylab = "Sample Quantiles (Mean Time in Seconds)")
+qqline(data_B_time, col = post_no_bots_col, lwd = 2)
+dev.off()
+
+png("qq_mean_crashes_A.png", width = 1600, height = 1000, res = 250)
+data_A_crashes <- dataset$mean_crashes[dataset$game_version == "A"]
+qqnorm(data_A_crashes,
+       main = "Q-Q Plot: Mean Crashes (Live Leaderboard)",
+       xlab = "Theoretical Quantiles",
+       ylab = "Sample Quantiles (# of Crashes)")
+qqline(data_A_crashes, col = live_bots_col, lwd = 2)
+dev.off()
+
+png("qq_mean_crashes_B.png", width = 1600, height = 1000, res = 250)
+data_B_crashes <- dataset$mean_crashes[dataset$game_version == "B"]
+qqnorm(data_B_crashes,
+       main = "Q-Q Plot: Mean Crashes (Post Leaderboard)",
+       xlab = "Theoretical Quantiles",
+       ylab = "Sample Quantiles (# of Crashes)")
+qqline(data_B_crashes, col = post_no_bots_col, lwd = 2)
+dev.off()
+
+# -----------------------------------------------
+# histograms of mean_time by game_version
+
+# live_bots
+png("hist_mean_time_A.png", width = 1600, height = 1000, res = 250)
+hist(dataset$mean_time[dataset$game_version == "A"],
+     col = c(live_bots_col),
+     breaks = 12,
+     main = "Ver. A - Live with Bots: Speed",
+     xlab = "Mean Time (Seconds)")
+dev.off()
+
+
+# post_no_live bots
+png("hist_mean_time_B.png", width = 1600, height = 1000, res = 250)
+hist(dataset$mean_time[dataset$game_version == "B"],
+     col = c(post_no_bots_col),
+     breaks = 12,
+     main = "Ver. B - Post with No Bots: Speed",
+     xlab = "Mean Time (Seconds)")
+dev.off()
+# -----------------------------------------------
+# histograms of mean_crashes by game_version
+# live_bots
+png("hist_mean_crashes_A.png", width = 1600, height = 1000, res = 250)
+hist(dataset$mean_crashes[dataset$game_version == "A"],
+     col = c(live_bots_col),
+     breaks = 12,
+     main = "Ver. A - Live with Bots: Accuracy",
+     xlab = "Mean Crashes (# of Crashes)")
+dev.off()
+
+# post_no_live bots
+png("hist_mean_crashes_B.png", width = 1600, height = 1000, res = 250)
+hist(dataset$mean_crashes[dataset$game_version == "B"],
+     col = c(post_no_bots_col),
+     breaks = 12,
+     main = "Ver. B - Post with No Bots: Accuracy",
+     xlab = "Mean Crashes (# of Crashes)")
+dev.off()
+# -----------------------------------------------
+#histograms of time improvement by game_version
+# live_bots
+png("hist_time_imp_A.png", width = 1600, height = 1000, res = 250)
+hist(dataset$time_improvement[dataset$game_version == "A"],
+     col = c(live_bots_col),
+     breaks = 12,
+     main = "Ver. A - Live with Bots: Speed Improvement from Trial 1 to 3",
+     xlab = "Time Improved from Trial 1 to 3 (Seconds)")
+dev.off()
+
+# post_no_live bots
+png("hist_time_imp_B.png", width = 1600, height = 1000, res = 250)
+hist(dataset$time_improvement[dataset$game_version == "B"],
+     col = c(post_no_bots_col),
+     breaks = 12,
+     main = "Ver. B - Post with No Bots: Speed Improvement from Trial 1 to 3",
+     xlab = "Time Improved from Trial 1 to 3 (Seconds)")
+dev.off()
+
+# -----------------------------------------------
+#histograms of crash improvement by game_version
+# live_bots
+png("hist_crashes_imp_A.png", width = 1600, height = 1000, res = 250)
+hist(dataset$crash_improvement[dataset$game_version == "A"],
+     col = c(live_bots_col),
+     breaks = 12,
+     main = "Ver. A - Live with Bots: Accuracy Improvement from Trial 1 to 3",
+     xlab = "Crash Improved from Trial 1 to 3 (# of Crashes)")
+dev.off()
+
+# post_no_live bots
+png("hist_crashes_imp_B.png", width = 1600, height = 1000, res = 250)
+hist(dataset$crash_improvement[dataset$game_version == "B"],
+     col = c(post_no_bots_col),
+     breaks = 12,
+     main = "Ver. B - Post with No Bots: Accuracy Improvement from Trial 1 to 3",
+     xlab = "Crash Improved from Trial 1 to 3 (# of Crashes)")
+dev.off()
+# -----------------------------------------------
 # normality tests; shapiro-wilk test n < 5000
 # if p < 0.05 --> reject H0 --> data IS NOT normally distributed
 # if p > 0.05 --> fail to reject H0 --> data IS normally distributed
@@ -48,113 +173,38 @@ normal_time_imp_live
 normal_time_imp_post
 normal_crash_imp_live 
 normal_crash_imp_post
-
-# colours of plots (we can change)
-live_bots_col <- "#0074D9" 
-post_no_bots_col <- "#FF851B"
-
-# -----------------------------------------------
-# histograms of mean_time by game_version
-
-# live_bots
-png("hist_mean_time_A.png", width = 800, height = 600)
-hist(dataset$mean_time[dataset$game_version == "A"],
-     col = c(live_bots_col),
-     breaks = 12,
-     main = "Ver. A - Live with Bots: Speed",
-     xlab = "Mean Time (Seconds)")
-dev.off()
-
-# post_no_live bots
-png("hist_mean_time_B.png", width = 800, height = 600)
-hist(dataset$mean_time[dataset$game_version == "B"],
-     col = c(post_no_bots_col),
-     breaks = 12,
-     main = "Ver. B - Post with No Bots: Speed",
-     xlab = "Mean Time (Seconds)")
-dev.off()
-# -----------------------------------------------
-# histograms of mean_crashes by game_version
-# live_bots
-png("hist_mean_crashes_A.png", width = 800, height = 600)
-hist(dataset$mean_crashes[dataset$game_version == "A"],
-     col = c(live_bots_col),
-     breaks = 12,
-     main = "Ver. A - Live with Bots: Accuracy",
-     xlab = "Mean Crashes (# of Crashes)")
-dev.off()
-
-# post_no_live bots
-png("hist_mean_crashes_B.png", width = 800, height = 600)
-hist(dataset$mean_crashes[dataset$game_version == "B"],
-     col = c(post_no_bots_col),
-     breaks = 12,
-     main = "Ver. B - Post with No Bots: Accuracy",
-     xlab = "Mean Crashes (# of Crashes)")
-dev.off()
-# -----------------------------------------------
-#histograms of time improvement by game_version
-# live_bots
-png("hist_time_imp_A.png", width = 800, height = 600)
-hist(dataset$time_improvement[dataset$game_version == "A"],
-     col = c(live_bots_col),
-     breaks = 12,
-     main = "Ver. A - Live with Bots: Speed Improvement from Trial 1 to 3",
-     xlab = "Time Improved from Trial 1 to 3 (Seconds)")
-dev.off()
-
-# post_no_live bots
-png("hist_time_imp_B.png", width = 800, height = 600)
-hist(dataset$time_improvement[dataset$game_version == "B"],
-     col = c(post_no_bots_col),
-     breaks = 12,
-     main = "Ver. B - Post with No Bots: Speed Improvement from Trial 1 to 3",
-     xlab = "Time Improved from Trial 1 to 3 (Seconds)")
-dev.off()
-
-# -----------------------------------------------
-#histograms of crash improvement by game_version
-# live_bots
-png("hist_crashes_imp_A.png", width = 800, height = 600)
-hist(dataset$crash_improvement[dataset$game_version == "A"],
-     col = c(live_bots_col),
-     breaks = 12,
-     main = "Ver. A - Live with Bots: Accuracy Improvement from Trial 1 to 3",
-     xlab = "Crash Improved from Trial 1 to 3 (# of Crashes)")
-dev.off()
-
-# post_no_live bots
-png("hist_crashes_imp_B.png", width = 800, height = 600)
-hist(dataset$crash_improvement[dataset$game_version == "B"],
-     col = c(post_no_bots_col),
-     breaks = 12,
-     main = "Ver. B - Post with No Bots: Accuracy Improvement from Trial 1 to 3",
-     xlab = "Crash Improved from Trial 1 to 3 (# of Crashes)")
-dev.off()
 # -----------------------------------------------
 # boxplot comparing mean_time across two game_versions
+png("boxplot_mean_timeAB.png", width = 1000, height = 1200, res = 250)
 boxplot(mean_time ~ game_version, data = dataset,
         col = c(live_bots_col, post_no_bots_col),
         main = "Speed by Condition",
         xlab = "Game Version", ylab = "Mean Time (Seconds)")
+dev.off()
 
 # boxplot comparing mean_crashes across two game_versions
+png("boxplot_mean_crashAB.png", width = 1000, height = 1200, res = 250)
 boxplot(mean_crashes ~ game_version, data = dataset,
         col = c(live_bots_col, post_no_bots_col),
         main = "Accuracy by Condition",
         xlab = "Game Version", ylab = "Mean Crashes (# of Crashes)")
-
+dev.off()
+# -----------------------------------------------
 # boxplot comparing time_improvement across two game_versions
+png("boxplot_time_imp_AB.png", width = 1000, height = 1200, res = 150)
 boxplot(time_improvement ~ game_version, data = dataset,
         col = c(live_bots_col, post_no_bots_col),
         main = "Speed Improvement from Trial 1 to 3 by Condition",
         xlab = "Game Version", ylab = "Time Improved from Trial 1 to 3 (Seconds)")
+dev.off()
 
 # boxplot comparing crash_improvement across two game_versions
+png("boxplot_crash_impAB.png", width = 1000, height = 1200, res = 150)
 boxplot(crash_improvement ~ game_version, data = dataset,
         col = c(live_bots_col, post_no_bots_col),
         main = "Accuracy Improvement from Trial 1 to 3 by Condition",
         xlab = "Game Version", ylab = "Crash Improvement from Trial 1 to 3 (# of Crashes)")
+dev.off()
 # -----------------------------------------------
 
 # ALL tests @ confidence level of 95% (alpha = 0.05)
@@ -171,6 +221,8 @@ var_crashes
 var_time_imp
 var_crashes_imp
 
+# -----------------------------------------------
+
 # print unpaired t-test values; specifically look at p-value for hypotheses
 # if p < 0.05 --> reject H0 --> IS significant difference between groups
 # if p > 0.05 --> fail to reject H0 --> NO significant evidence of difference
@@ -180,10 +232,13 @@ t_crashes <- t.test(mean_crashes ~ game_version, data = dataset, conf.level = 0.
 t_time_imp <- t.test(time_improvement ~ game_version, data = dataset, conf.level = 0.95)
 t_crashes_imp <- t.test(crash_improvement ~ game_version, data = dataset, conf.level = 0.95)
 
+
 t_time
 t_crashes
 t_time_imp
 t_crashes_imp
+
+# -----------------------------------------------
 
 # pearson correlation test
 # if p < 0.05 --> statistically significant
@@ -197,22 +252,36 @@ cor_speed_accuracy
 cor_speed_accuracy_imp
 
 # plot the correlation between crashes and time
+png("Speed_Accuracy_Correlation.png", width = 1600, height = 1000, res = 150)
 ggplot(dataset, aes(x = mean_time, y = mean_crashes, color = game_version)) +
   geom_point(size = 2) +
   geom_smooth(method = "lm", se = FALSE) +
-  scale_color_manual(values = c(live_bots_col, post_no_bots_col)) +
+  scale_color_manual(
+    values = c(live_bots_col, post_no_bots_col),
+    labels = c("Live Leaderboard (Bots)", "Post-Round Leaderboard (No Bots)")
+  ) +
   labs(
     title = "Speed–Accuracy Relationship",
     x = "Mean Time (Seconds)",
-    y = "Mean Crashes (# of Crashes)")
+    y = "Mean Crashes (# of Crashes)",
+    color = "Game Version"   
+  )
+dev.off()
 
 # plot the correlation between crashes and time
+png("Speed_Accuracy_IMP_Correlation.png", width = 1600, height = 1000, res = 150)
 ggplot(dataset, aes(x = time_improvement, y = crash_improvement, color = game_version)) +
   geom_point(size = 2) +
   geom_smooth(method = "lm", se = FALSE) +
-  scale_color_manual(values = c(live_bots_col, post_no_bots_col)) +
+  scale_color_manual(
+    values = c(live_bots_col, post_no_bots_col),
+    labels = c("Live Leaderboard (Bots)", "Post-Round Leaderboard (No Bots)")
+  ) +
   labs(
     title = "Speed–Accuracy Improvement Relationship",
     x = "Time Improvement from Trial 1 to 3 (Seconds)",
-    y = "Crash Improvement from Trial 1 to 3 (# of Crashes)")
+    y = "Crash Improvement from Trial 1 to 3 (# of Crashes)",
+    color = "Game Version"   
+  )
+dev.off()
 
